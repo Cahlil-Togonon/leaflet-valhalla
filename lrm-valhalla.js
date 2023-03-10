@@ -87,7 +87,7 @@
       // Send the request. Sending data is not supported.
       x.send(null);
       sent = true;
-  
+      alert(url)
       return x;
   }
   
@@ -410,13 +410,16 @@
   
         corslite(url, L.bind(function(err, resp) {
           var data;
-  
+          var data_err;
           clearTimeout(timer);
           if (!timedOut) {
             if (!err) {
               data = JSON.parse(resp.responseText);
+              alert(JSON.stringify(data));
               this._routeDone(data, wps, callback, context);
             } else {
+              data_err = JSON.parse(err.responseText);
+              alert(JSON.stringify(data_err));
               callback.call(context || callback, {
                 status: err.status,
                 message: err.responseText
@@ -438,31 +441,36 @@
           callback.call(context, {
             status: response.status,
             message: response.status_message
-          });
+          }
+          );
           return;
         }
-  
+
         var insts = [];
         var coordinates = [];
         var shapeIndex =  0;
-  
+        
         for(var i = 0; i < response.trip.legs.length; i++){
           var coord = polyline.decode(response.trip.legs[i].shape, 6);
   
           for(var k = 0; k < coord.length; k++){
             coordinates.push(coord[k]);
           }
-  
+          
           for(var j =0; j < response.trip.legs[i].maneuvers.length; j++){
+            
             var res = response.trip.legs[i].maneuvers[j];
             res.distance = response.trip.legs[i].maneuvers[j]["length"];
+            
             res.index = shapeIndex + response.trip.legs[i].maneuvers[j]["begin_shape_index"];
             insts.push(res);
           }
   
           shapeIndex += response.trip.legs[i].maneuvers[response.trip.legs[i].maneuvers.length-1]["begin_shape_index"];
+          alert(JSON.stringify(coordinates))
+          alert(response.trip.legs[i].maneuvers.length)
         }
-  
+       
         actualWaypoints = this._toWaypoints(inputWaypoints, response.trip.locations);
   
   
