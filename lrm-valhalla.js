@@ -87,7 +87,7 @@
       // Send the request. Sending data is not supported.
       x.send(null);
       sent = true;
-      alert(url)
+      //alert(url)
       return x;
   }
   
@@ -415,11 +415,11 @@
           if (!timedOut) {
             if (!err) {
               data = JSON.parse(resp.responseText);
-              alert(JSON.stringify(data));
+              //(JSON.stringify(data));
               this._routeDone(data, wps, callback, context);
             } else {
               data_err = JSON.parse(err.responseText);
-              alert(JSON.stringify(data_err));
+              //alert(JSON.stringify(data_err));
               callback.call(context || callback, {
                 status: err.status,
                 message: err.responseText
@@ -467,8 +467,8 @@
           }
   
           shapeIndex += response.trip.legs[i].maneuvers[response.trip.legs[i].maneuvers.length-1]["begin_shape_index"];
-          alert(JSON.stringify(coordinates))
-          alert(response.trip.legs[i].maneuvers.length)
+          //(JSON.stringify(coordinates))
+          //alert(response.trip.legs[i].maneuvers.length)
         }
        
         actualWaypoints = this._toWaypoints(inputWaypoints, response.trip.locations);
@@ -548,7 +548,8 @@
           locs.push(loc);
           locationList.push(locationKey)
         }
-
+        
+        /*
         for (let k = 0; k < locationList.length; k++){
           for (let l = 0; l < excludePoly.length; l++){
             let odd = false;
@@ -567,6 +568,7 @@
         for (let i = 0; i < origDestExclusion.length; i++){
           excludePoly.splice(origDestExclusion[i], 1)
         }
+        */
 
         var params = JSON.stringify(
           {
