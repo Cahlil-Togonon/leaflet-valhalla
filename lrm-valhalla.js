@@ -549,7 +549,7 @@
           locationList.push(locationKey)
         }
         
-        /*
+        
         for (let k = 0; k < locationList.length; k++){
           for (let l = 0; l < excludePoly.length; l++){
             let odd = false;
@@ -565,10 +565,11 @@
           }
         }
 
+        alert(origDestExclusion.length)
         for (let i = 0; i < origDestExclusion.length; i++){
           excludePoly.splice(origDestExclusion[i], 1)
         }
-        */
+        
 
         var params = JSON.stringify(
           {
