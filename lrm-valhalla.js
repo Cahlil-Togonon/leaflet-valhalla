@@ -549,27 +549,28 @@
           locationList.push(locationKey)
         }
         
-        
+      
         for (let k = 0; k < locationList.length; k++){
           for (let l = 0; l < excludePoly.length; l++){
-            let odd = false;
-            for (let i = 0, j = excludePoly[l].length - 1; i < excludePoly[l].length; i++) {
-              if (((excludePoly[l][i][1] > locationList[k][0]) !== (excludePoly[l][j][1] > locationList[k][0])) 
-                  && (locationList[k][1] < ((excludePoly[l][j][0] - excludePoly[l][i][0]) * (locationList[k][0] - excludePoly[l][i][1]) / (excludePoly[l][j][1] - excludePoly[l][i][1]) + excludePoly[l][i][0]))) {
-                  odd = !odd;
-                  origDestExclusion.push(l)
-                  break
+            var x = locationList[k][1], y = locationList[k][0];
+            for (var i = 0, j = excludePoly[l].length - 1; i < excludePoly[l].length; j = i++) {
+              var xi = excludePoly[l][i][0], yi = excludePoly[l][i][1];
+              var xj = excludePoly[l][j][0], yj = excludePoly[l][j][1];
+              var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+              if (intersect){
+                //alert(excludePoly[l])
+                origDestExclusion.push(l);
+                break;
               }
-              j = i;
             }
           }
         }
 
-        alert(origDestExclusion.length)
+        origDestExclusion = [...new Set(origDestExclusion)];
+        alert(origDestExclusion.length);
         for (let i = 0; i < origDestExclusion.length; i++){
           excludePoly.splice(origDestExclusion[i], 1)
-        }
-        
+        }        
 
         var params = JSON.stringify(
           {
@@ -579,7 +580,7 @@
           }
         );
         
-        origDestExclusion = []
+        origDestExclusion = [];
         return this.options.serviceUrl + 'route?json=' + params
       },
 
