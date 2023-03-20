@@ -567,7 +567,7 @@
         }
 
         origDestExclusion = [...new Set(origDestExclusion)];
-        alert(origDestExclusion.length);
+        //alert(origDestExclusion.length);
         for (let i = 0; i < origDestExclusion.length; i++){
           excludePoly.splice(origDestExclusion[i], 1)
         }        
