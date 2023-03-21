@@ -54,29 +54,30 @@
     <script src="Control.Geocoder.js"></script>
     <script src="lrm-valhalla.js"></script>
     <script>
+        var map = L.map('map').setView([14.6539, 121.0685], 13);
         var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        });
-        var map = L.map('map',{layers:[osm]}).setView([14.6539, 121.0685], 13);
-        var layerControl = L.control.layers(null,null,{collapsed:false,postion:"topleft"}).addTo(map);
+        }).addTo(map);
+        var aqiPolygons, excludePolygons;
+        var layerControl = L.control.layers(null,null,{collapsed:false}).addTo(map);
 
         fetch('polygonized.json')
             .then(function (response) {
                 return response.json();
             })
             .then(function (data) {
-                var aqiPolygons;
                 var geojsonPolygon = data;
-
+                var threshold = geojsonPolygon.threshold;
                 var maxAQI = 0;
-                var AQI = 0;
+                var polygon_AQI = 0;
                 for(var i=0; i < geojsonPolygon.features.length; i++){
                     polygon_AQI = geojsonPolygon.features[i].properties.AQI;
                     maxAQI = polygon_AQI != 32767 && polygon_AQI > maxAQI ? polygon_AQI : maxAQI;
                 };
 
                 function getColor(d) {
-                    return  d > maxAQI  ? '#a07684' :       // AQI chart (should be absolute scale?)
+                    return  d >= threshold  ? '#000000' :       // highlight black for threshold
+                            d > maxAQI      ? '#a07684' :       // AQI chart (should be absolute scale?)
                             d > 6*maxAQI/7  ? '#A37DB8' :
                             d > 5*maxAQI/7  ? '#E31A1C' :
                             d > 4*maxAQI/7  ? '#F6676B' :
@@ -95,7 +96,7 @@
                 }
                 function style(feature) {
                     return {
-                        fillColor: getColor(feature.properties.AQI.toString()),
+                        fillColor: getColor(feature.properties.AQI),
                         weight: 2,
                         opacity: 1,
                         color: 'white',
@@ -116,13 +117,18 @@
                 }
                 function resetHighlight(e) {
                     var layer = e.target;
-                    geojson.resetStyle(e.target);
-                    layer.bringToBack();
+                    layer.setStyle({
+                        weight: 2,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.7
+                    });
+                    // geojson.resetStyle(layer);
                     info.update();
                 }
                 function zoomToFeature(e) {
                     map.fitBounds(e.target.getBounds());
-                    alert(maxAQI);
+                    //alert(threshold);                     # debugging
                 }
                 function onEachFeature(feature, layer) {
                     layer.on({
@@ -182,9 +188,8 @@
                 return response.json();
             })
             .then(function (data) {
-                var excludePolygons;
                 var geojsonPolygon = data;
-                excludePolygons = L.geoJSON(geojsonPolygon, {color: 'black'}).bringToFront();
+                excludePolygons = L.geoJSON(geojsonPolygon, {color: 'black'});
                 layerControl.addOverlay(excludePolygons, "Exclude Polygon");
                 var coords = '';
                 coords = geojsonPolygon["features"][0]["geometry"]["coordinates"];
@@ -220,7 +225,7 @@
             })
             .catch(function (err) {
                 console.log('error: ' + err);
-            });   
+            });
     </script>    
 </body>
 </html>
