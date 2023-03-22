@@ -76,8 +76,7 @@
                 };
 
                 function getColor(d) {
-                    return  d >= threshold  ? '#000000' :       // highlight black for threshold
-                            d > maxAQI      ? '#a07684' :       // AQI chart (should be absolute scale?)
+                    return  d > maxAQI      ? '#a07684' :       // AQI chart (should be absolute scale?)
                             d > 6*maxAQI/7  ? '#A37DB8' :
                             d > 5*maxAQI/7  ? '#E31A1C' :
                             d > 4*maxAQI/7  ? '#F6676B' :
@@ -95,12 +94,12 @@
                     //                    '#FFEDA0' ;
                 }
                 function style(feature) {
-                    return {
-                        fillColor: getColor(feature.properties.AQI),
+                    return {            // highlight black if >= threshold
+                        fillColor: feature.properties.AQI >= threshold ? '#000000' : getColor(feature.properties.AQI),
                         weight: 2,
                         opacity: 1,
                         color: 'white',
-                        dashArray: '3',
+                        dashArray: '2',
                         fillOpacity: 0.7
                     };
                 }
@@ -117,13 +116,7 @@
                 }
                 function resetHighlight(e) {
                     var layer = e.target;
-                    layer.setStyle({
-                        weight: 2,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.7
-                    });
-                    // geojson.resetStyle(layer);
+                    aqiPolygons.resetStyle(layer);
                     info.update();
                 }
                 function zoomToFeature(e) {
@@ -149,7 +142,7 @@
                 //     featureLayer.bindPopup(feature.properties.AQI.toString());
                 //     }}).addTo(map);
 
-                var info = L.control({position: 'bottomleft'});
+                var info = L.control({position: 'bottomright'});
                 info.onAdd = function (map) {
                     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
                     this.update();
@@ -163,17 +156,19 @@
                 };
                 info.addTo(map);
 
-                var legend = L.control({position: 'bottomright'});
+                var legend = L.control({position: 'bottomleft'});
                 legend.onAdd = function (map) {
                     var div = L.DomUtil.create('div', 'info legend'),
-                        grades = [0, Math.round(1*maxAQI/7), Math.round(2*maxAQI/7), Math.round(3*maxAQI/7), Math.round(4*maxAQI/7), Math.round(5*maxAQI/7), Math.round(6*maxAQI/7), maxAQI],
+                        grades = [0, 1*maxAQI/7, 2*maxAQI/7, 3*maxAQI/7, 4*maxAQI/7, 5*maxAQI/7, 6*maxAQI/7, maxAQI],
                         labels = [];
                     // loop through our density intervals and generate a label with a colored square for each interval
                     for (var i = 0; i < grades.length; i++) {
                         div.innerHTML +=
                             '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-                            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+                            Math.round(grades[i]) + (grades[i + 1] ? '&ndash;' + Math.round(grades[i + 1]) + '<br>' : '+ <br>');
                     }
+                    div.innerHTML +=
+                        '<i style="background:' + '#000000' + '"></i> ' + threshold + '+' + ' (threshold)'; // black legend for threshold
                     return div;
                 };
                 legend.addTo(map);
