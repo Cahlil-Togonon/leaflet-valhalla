@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Example</title>
+    <link rel="stylesheet" href="leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""/>
+    <link rel="stylesheet" href="Control.Geocoder.css" />
+    <link rel="stylesheet" href="leaflet.routing.valhalla.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="leaflet.js"
+    integrity="sha256-WBk oXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+    crossorigin=""></script>
+    <script src="leaflet-routing-machine.js"></script>
+    <script src="Control.Geocoder.js"></script>
+    <script src="lrm-valhalla.js"></script>
+    <script>
+        var map = L.map('map').setView([14.6539, 121.0685], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        var geojsonPolygon = {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                  "coordinates": [
+                    [
+                      [
+                        121.07333429816725,
+                        14.64611162659169
+                      ],
+                      [
+                        121.07333429816725,
+                        14.641256094928721
+                      ],
+                      [
+                        121.07614732791848,
+                        14.641256094928721
+                      ],
+                      [
+                        121.07614732791848,
+                        14.64611162659169
+                      ],
+                      [
+                        121.07333429816725,
+                        14.64611162659169
+                      ]
+                    ]
+                  ],
+                  "type": "Polygon"
+                }
+              }
+            ]
+          };
+        L.geoJSON(geojsonPolygon).addTo(map);
+        L.Routing.control({
+            waypoints: [
+                L.latLng(14.6539, 121.0685),
+                L.latLng(14.6399, 121.0785)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            waypointNameFallback: function(latLng) {
+                function zeroPad(n) {
+                    n = Math.round(n);
+                    return n < 10 ? '0' + n : n;
+                }
+                function sexagesimal(p, pos, neg) {
+                    var n = Math.abs(p),
+                        degs = Math.floor(n),
+                        mins = (n - degs) * 60,
+                        secs = (mins - Math.floor(mins)) * 60,
+                        frac = Math.round((secs - Math.floor(secs)) * 100);
+                    return (n >= 0 ? pos : neg) + degs + '°' +
+                        zeroPad(mins) + '\'' +
+                        zeroPad(secs) + '.' + zeroPad(frac) + '"';
+                }
+        
+                return sexagesimal(latLng.lat, 'N', 'S') + ' ' + sexagesimal(latLng.lng, 'E', 'W');
+            }
+        }).addTo(map);
+    </script>    
+</body>
+</html>
