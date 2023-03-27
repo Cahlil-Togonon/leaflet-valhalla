@@ -358,7 +358,7 @@
   
     L.Routing.Valhalla = L.Class.extend({
       options: {
-        serviceUrl: 'http://localhost:8002/',
+        serviceUrl: 'http://192.168.195.94:8002/',
         timeout: 30 * 1000,
         transitmode: 'pedestrian',
         polygon: ''

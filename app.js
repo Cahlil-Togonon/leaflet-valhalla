@@ -44,13 +44,13 @@ fetch('polygonized.json')
                 opacity: 1,
                 color: 'white',
                 dashArray: '2',
-                fillOpacity: 0.7
+                fillOpacity: 0.5
             };
         }
         function highlightFeature(e) {
             var layer = e.target;
             layer.setStyle({
-                weight: 5,
+                weight: 1,
                 color: '#666',
                 dashArray: '',
                 fillOpacity: 0.7
@@ -140,7 +140,7 @@ fetch('filtered.json')
                 L.latLng(14.6539, 121.0685),
                 L.latLng(14.6399, 121.0785)
             ],
-            routeWhileDragging: true,
+            routeWhileDragging: false,
             geocoder: L.Control.Geocoder.nominatim(),
             waypointNameFallback: function(latLng) {
                 function zeroPad(n) {
